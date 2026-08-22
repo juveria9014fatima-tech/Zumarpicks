@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Product — Zumar's Site</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ivory:#FBF7F0;
+    --plum:#4A2C3D;
+    --sage:#8B9A7B;
+    --rose:#D9A6A0;
+    --gold:#C08A3E;
+    --charcoal:#2E2A28;
+    --line:#E4DCCC;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--ivory);
+    color:var(--charcoal);
+    font-family:'Work Sans', sans-serif;
+    min-height:100vh;
+    padding:30px 20px 60px;
+  }
+  .wrap{ max-width:480px; margin:0 auto; }
+  h1{
+    font-family:'Fraunces', serif;
+    font-size:26px;
+    color:var(--plum);
+    font-weight:500;
+    text-align:center;
+  }
+  .sub{
+    text-align:center;
+    font-size:13px;
+    color:var(--sage);
+    letter-spacing:1px;
+    text-transform:uppercase;
+    margin-top:6px;
+    margin-bottom:30px;
+  }
+
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:24px 20px;
+  }
+
+  label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--plum);
+    margin-bottom:6px;
+    margin-top:18px;
+  }
+  label:first-of-type{ margin-top:0; }
+
+  input, select, textarea{
+    width:100%;
+    padding:11px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-family:'Work Sans', sans-serif;
+    font-size:14.5px;
+    background:var(--ivory);
+    color:var(--charcoal);
+  }
+  input:focus, select:focus, textarea:focus{
+    outline:none;
+    border-color:var(--sage);
+  }
+  textarea{ resize:vertical; min-height:60px; }
+
+  .hint{
+    font-size:11px;
+    color:#a39c8f;
+    margin-top:4px;
+  }
+
+  #imgPreview{
+    margin-top:10px;
+    width:100%;
+    aspect-ratio:1/1;
+    border-radius:10px;
+    object-fit:cover;
+    background:#f1ece1;
+    display:none;
+  }
+
+  button.submit{
+    width:100%;
+    margin-top:26px;
+    padding:14px;
+    border:none;
+    border-radius:30px;
+    background:var(--plum);
+    color:var(--ivory);
+    font-size:15px;
+    font-weight:600;
+    letter-spacing:0.3px;
+    cursor:pointer;
+    transition:background 0.2s ease;
+  }
+  button.submit:hover{ background:#3a2130; }
+  button.submit:disabled{ opacity:0.6; }
+
+  .status{
+    text-align:center;
+    margin-top:16px;
+    font-size:13.5px;
+    min-height:18px;
+  }
+  .status.success{ color:var(--sage); }
+  .status.error{ color:var(--rose); }
+
+  .view-link{
+    display:block;
+    text-align:center;
+    margin-top:30px;
+    font-size:13px;
+    color:var(--plum);
+    text-decoration:none;
+    border-bottom:1px solid var(--plum);
+    padding-bottom:1px;
+    width:fit-content;
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  .product-list{
+    margin-top:40px;
+  }
+  .product-list h2{
+    font-family:'Fraunces', serif;
+    font-size:17px;
+    color:var(--plum);
+    margin-bottom:12px;
+    font-weight:500;
+  }
+  .prod-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:8px 10px;
+    margin-bottom:8px;
+  }
+  .prod-row img{
+    width:38px; height:38px;
+    border-radius:6px;
+    object-fit:cover;
+    background:#f1ece1;
+    flex-shrink:0;
+  }
+  .prod-row .info{ flex:1; min-width:0; }
+  .prod-row .name{
+    font-size:13.5px;
+    font-weight:500;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .prod-row .cat{
+    font-size:11px;
+    color:var(--sage);
+  }
+  .prod-row button{
+    flex-shrink:0;
+    background:none;
+    border:1px solid var(--rose);
+    color:var(--rose);
+    border-radius:20px;
+    padding:5px 11px;
+    font-size:11.5px;
+    cursor:pointer;
+  }
+  .prod-row button:hover{ background:var(--rose); color:#fff; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Add a Product</h1>
+  <div class="sub">Curated by Zumar</div>
+
+  <div class="card">
+    <form id="productForm">
+      <label for="category">Category</label>
+      <input list="catList" id="category" placeholder="e.g. Fashion, Hair Care" required>
+      <datalist id="catList"></datalist>
+      <div class="hint">Pick an existing category or type a new one — new ones show up on the site automatically.</div>
+
+      <label for="name">Product Name</label>
+      <input type="text" id="name" placeholder="e.g. Amla Hair Oil" required>
+
+      <label for="desc">Short Description</label>
+      <textarea id="desc" placeholder="One line — what makes it good"></textarea>
+
+      <label for="price">Price</label>
+      <input type="text" id="price" placeholder="e.g. ₹399" required>
+
+      <label for="image">Image Link</label>
+      <input type="url" id="image" placeholder="Paste image URL here" required>
+      <div class="hint">Long-press any product photo online → "Copy image address"</div>
+      <img id="imgPreview">
+
+      <label for="link">Affiliate Link</label>
+      <input type="url" id="link" placeholder="Paste your affiliate link here" required>
+
+      <button type="submit" class="submit" id="submitBtn">Add Product</button>
+      <div class="status" id="status"></div>
+    </form>
+  </div>
+
+  <a class="view-link" href="index.html">← View live site</a>
+
+  <div class="product-list">
+    <h2>Current Products</h2>
+    <div id="prodList"><div class="hint">Loading…</div></div>
+  </div>
+</div>
+
+<script>
+  const BIN_ID = "6a802d32da38895dfee7c484";
+  const API_KEY = "$2a$10$/3q4FBDK9ApsswSoiK5nXuQLvODD0F8E9aD7N8ZJJJEkE1VoGFF/a";
+  const BIN_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
+  const LATEST_URL = `${BIN_URL}/latest`;
+
+  const form = document.getElementById('productForm');
+  const status = document.getElementById('status');
+  const submitBtn = document.getElementById('submitBtn');
+  const imageInput = document.getElementById('image');
+  const imgPreview = document.getElementById('imgPreview');
+  const catList = document.getElementById('catList');
+  const prodList = document.getElementById('prodList');
+
+  let products = [];
+
+  imageInput.addEventListener('input', ()=>{
+    if(imageInput.value){
+      imgPreview.src = imageInput.value;
+      imgPreview.style.display = 'block';
+    }else{
+      imgPreview.style.display = 'none';
+    }
+  });
+
+  async function loadProducts(){
+    try{
+      const res = await fetch(LATEST_URL, { headers: { "X-Master-Key": API_KEY } });
+      const data = await res.json();
+      products = Array.isArray(data.record) ? data.record.filter(p => p && p.name) : [];
+      renderCategories();
+      renderList();
+    }catch(err){
+      prodList.innerHTML = `<div class="hint">Couldn't load current products.</div>`;
+    }
+  }
+
+  function renderCategories(){
+    const cats = [...new Set(products.map(p=>p.category))];
+    catList.innerHTML = cats.map(c=>`<option value="${c}"></option>`).join('');
+  }
+
+  function renderList(){
+    if(products.length === 0){
+      prodList.innerHTML = `<div class="hint">No products added yet.</div>`;
+      return;
+    }
+    prodList.innerHTML = products.map((p, i)=>`
+      <div class="prod-row">
+        <img src="${p.image}" onerror="this.src='https://placehold.co/80x80/f1ece1/8a8177?text=%20'">
+        <div class="info">
+          <div class="name">${p.name}</div>
+          <div class="cat">${p.category} · ${p.price || ''}</div>
+        </div>
+        <button data-index="${i}">Remove</button>
+      </div>
+    `).join('');
+
+    prodList.querySelectorAll('button[data-index]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        if(!confirm('Remove this product?')) return;
+        const idx = parseInt(btn.dataset.index);
+        products.splice(idx, 1);
+        btn.disabled = true;
+        btn.textContent = '...';
+        await saveProducts();
+        renderCategories();
+        renderList();
+      });
+    });
+  }
+
+  async function saveProducts(){
+    await fetch(BIN_URL, {
+      method: 'PUT',
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": API_KEY
+      },
+      body: JSON.stringify(products)
+    });
+  }
+
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Adding…';
+    status.textContent = '';
+    status.className = 'status';
+
+    const newProduct = {
+      category: document.getElementById('category').value.trim(),
+      name: document.getElementById('name').value.trim(),
+      desc: document.getElementById('desc').value.trim(),
+      price: document.getElementById('price').value.trim(),
+      image: document.getElementById('image').value.trim(),
+      link: document.getElementById('link').value.trim()
+    };
+
+    try{
+      products.push(newProduct);
+      await saveProducts();
+      status.textContent = '✓ Added! It\'s live on your site now.';
+      status.className = 'status success';
+      form.reset();
+      imgPreview.style.display = 'none';
+      renderCategories();
+      renderList();
+    }catch(err){
+      status.textContent = 'Something went wrong — try again.';
+      status.className = 'status error';
+    }finally{
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Add Product';
+    }
+  });
+
+  loadProducts();
+</script>
+</body>
+</html>
